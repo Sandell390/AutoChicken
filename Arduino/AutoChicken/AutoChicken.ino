@@ -17,16 +17,35 @@
 */
 
 
+int BOWLTEMP_A_PIN = A0
+int WATERTANKTEMP_A_PIN = A1
+int WATERLEVEL_A_PIN = A2
+
+int HEATINGPLATE_D_PIN = 2
+int PUMP_D_PIN = 3
+int SWITCHFLOAT_D_PIN = 4
+int WATERLEVEL_D_PIN = 5
+
+bool TankHeater = false
+
 void setup() {
   // Initialize serial and wait for port to open:
   Serial.begin(9600);
   // This delay gives the chance to wait for a Serial Monitor without blocking if none is found
   delay(1500);
 
+  pinMode(BOWLTEMP_A_PIN, INPUT);
+  pinMode(WATERTANKTEMP_A_PIN, INPUT);
+  pinMode(WATERLEVEL_A_PIN, INPUT);
+
+  pinMode(HEATINGPLATE_D_PIN, OUTPUT);
+  pinMode(PUMP_D_PIN, OUTPUT);
+  pinMode(SWITCHFLOAT_D_PIN, INPUT);
+  pinMode(WATERLEVEL_D_PIN, OUTPUT);
+
+
   // Defined in thingProperties.h
   initProperties();
-  pinMode(2, INPUT);
-  pinMode(13, OUTPUT);
   // Connect to Arduino IoT Cloud
   ArduinoCloud.begin(ArduinoIoTPreferredConnection);
 
@@ -43,6 +62,9 @@ void setup() {
 
 void loop() {
   ArduinoCloud.update();
+
+
+  
   delay(100);
 }
 
