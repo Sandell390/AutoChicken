@@ -27,6 +27,10 @@ int SWITCHFLOAT_D_PIN = 4
 int WATERLEVEL_D_PIN = 5
 
 bool TankHeater = false
+bool BowlHeater = false
+
+float[] TankTemps;
+float[] BowlTemps;
 
 void setup() {
   // Initialize serial and wait for port to open:
@@ -63,6 +67,8 @@ void setup() {
 void loop() {
   ArduinoCloud.update();
 
+  
+  
 
   
   delay(100);
