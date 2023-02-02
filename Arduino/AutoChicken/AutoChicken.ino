@@ -22,7 +22,7 @@ dht11 DHT;
   These functions are generated with the Thing and added at the end of this sketch.
 */
 
-bool AnalyseArray(int[] );
+bool AnalyseArray(short[] );
 
 int BOWLTEMP_A_PIN = A0;
 int WATERTANKTEMP_A_PIN = A1;
@@ -39,14 +39,11 @@ bool BowlHeater = false;
 int TankTemps[50];
 int BowlTemps[50];
 
-int tankTempIndex = 0;
-int BowlTempIndex = 0;
+byte tankTempIndex = 0;
+byte BowlTempIndex = 0;
 
 bool tankTempError = false;
 bool bowlTempError = false;
-
-int emptySpot = 0;
-
 
 void setup()
 {
@@ -124,76 +121,25 @@ void loop()
   delay(500);
 }
 
-bool AnalyseArray( int array[])
+bool AnalyseArray(int array[])
 {
-  Serial.println("Init Array");
+  for(int i = 0; i < 50; i++){
 
-  int temp[50][50];
-  emptySpot = 0;
+   int count = 0;
 
-  Serial.println("Fill Array");
+   for(int j = 0; j < 50; j++)
+   {
+      if(array[i] == array[j]){
+        count++;
 
-  for (int i = 0; i < 50; i++)
-  {
-    for (int j = 0; j < 50; j++)
-    {
-      temp[i][j] = 0;
+        if(count > 45){
+      return false;
     }
-  }
-
-  Serial.println("Loop Array");
-
-  for (int i = 0; i < 50; i++)
-  {
+      }
+   }
+   
     
 
-    for (int j = 0; j < 50; j++)
-    {
-      if (array[i] == temp[j][0])
-      {
-        return false;
-        for (int k = 0; k < 50; k++)
-        {
-          if (k > 45)
-          {
-            return false;
-          }
-
-          if (temp[j][k] == 0)
-          {
-            temp[j][k] = array[i];
-            break;
-          }
-        }
-        break;
-      }
-      else
-      {
-        //Serial.println("Finding emptySpot: " + String(emptySpot));
-        if (temp[j][0] == (int)0 && emptySpot == (int)0)
-        {
-          emptySpot = (int)j;
-          Serial.println("Found emptySpot");
-        }
-        return false;
-      }
-    }
-
-    for (int k = 0; k < 50; k++)
-    {
-
-      if (k > 45)
-      {
-        return false;
-      }
-      Serial.println("EmptySpot: " + String(emptySpot));
-      Serial.println("K: " + String(k));
-      if (temp[emptySpot][k] == 0)
-      {
-        temp[emptySpot][k] = array[i];
-        break;
-      }
-    }
   }
 
   return true;
