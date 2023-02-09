@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "358626938682",
+    "project_id": "autochicken-552bf",
+    "storage_bucket": "autochicken-552bf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:358626938682:android:02e4af43976b98b49c0a03",
+        "android_client_info": {
+          "package_name": "com.example.auto_chicken_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "358626938682-g9qo6j6do61po1ba8pel42fvrhenue4o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOXSstdQIWIH_jL8pJFJmGvI9O4r7nLKU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "358626938682-g9qo6j6do61po1ba8pel42fvrhenue4o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
