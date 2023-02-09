@@ -67,7 +67,7 @@ class WaterPage extends StatelessWidget {
                       Expanded(child: Container()),
                       _defaultTextWater(snapshot.data!.docs[2]
                                   ['WaterReservoirMinimumLevel'] ==
-                              true
+                              false
                           ? 'Water level is: OK'
                           : 'Water level is: Needs to be filled'),
                       Expanded(child: Container()),
@@ -120,7 +120,7 @@ class WaterPage extends StatelessWidget {
                               : 'The heater is: Off'),
                       Expanded(child: Container()),
                       _defaultTextWater(
-                          snapshot.data!.docs[1]['WaterBowlLevelValue'] > 100
+                          snapshot.data!.docs[1]['WaterBowlLevelValue'] > 10
                               ? 'The waterlevel is: OK'
                               : 'The waterlevel is: LOW'),
                       Expanded(child: Container()),

@@ -11,14 +11,14 @@
 #include "arduino_secrets.h"
 
 const int ARRAY_SIZE = 100;
-const int WATERARRAY_SIZE = 100;
+const int WATERARRAY_SIZE = 20;
 
 int BOWLTEMP_A_PIN = 34;
 int WATERTANKTEMP_A_PIN = 35;
 int WATERLEVEL_A_PIN = 33;
 
 int HEATINGPLATE_D_PIN = 21;
-int PUMP_D_PIN = 19;
+int PUMP_D_PIN = 26;
 int SWITCHFLOAT_D_PIN = 18;
 int WATERLEVEL_D_PIN = 25;
 
@@ -39,7 +39,7 @@ bool tankTempError = true;
 bool bowlTempError = true;
 bool pump_watersensor_error = false;
 
-//bool pumpActive = false;
+bool pumpActive = false;
 //bool floatSwitchActive = false;
 
 char ssid[] = SECRET_SSID;        // your network SSID (name)
@@ -78,6 +78,8 @@ void setup()
   pinMode(PUMP_D_PIN, OUTPUT);
   pinMode(SWITCHFLOAT_D_PIN, INPUT_PULLUP);
   pinMode(WATERLEVEL_D_PIN, OUTPUT);
+
+  digitalWrite(PUMP_D_PIN, HIGH);
 
 
   CheckWarnings();
@@ -221,7 +223,6 @@ void BowlTemperatur(){
             BowlHeater = true;
             TogglePowerSwitch();
             FireStoreTest("WaterBowlHeaterOn","true","booleanValue", "WaterBowl");
-
           }
         }
       }
@@ -256,10 +257,10 @@ void WaterLevel(){
       float lastAverage = FindAverage(LastWaterLevels);
       float average = FindAverage(WaterLevels);
       Serial.println("Average WaterLevel: " + String(average));
-      FireStoreTest("WaterBowlLevelValue","true","doubleValue", "WaterBowl");
-      if (digitalRead(PUMP_D_PIN) == HIGH){
+      FireStoreTest("WaterBowlLevelValue",String(average),"doubleValue", "WaterBowl");
+      if (pumpActive){
         if (average > lastAverage * 0.98 || average != lastAverage || lastAverage != 0){
-          if(digitalRead(SWITCHFLOAT_D_PIN) == LOW){
+          if(digitalRead(SWITCHFLOAT_D_PIN) == HIGH){
             // Send warning to app
             FireStoreTest("WaterReservoirMinimumLevel","true","booleanValue", "WaterReservoir");
             Serial.println("FloatSwitch ON");
@@ -267,15 +268,18 @@ void WaterLevel(){
             digitalWrite(PUMP_D_PIN, LOW);
             FireStoreTest("WaterReservoirPumpOn","false","booleanValue", "WaterReservoir");
             Serial.println("Pump OFF");
+            pumpActive = false;
             // Check if pump has been active in 30 sec
 
           }else{
+            FireStoreTest("WaterReservoirMinimumLevel","false","booleanValue", "WaterReservoir");
 
             if(average > 90){
               //Turn off pump
               digitalWrite(PUMP_D_PIN, LOW);
               FireStoreTest("WaterReservoirPumpOn","false","booleanValue", "WaterReservoir");
               Serial.println("Pump OFF");
+              pumpActive = false;
             }
 
           }
@@ -292,6 +296,7 @@ void WaterLevel(){
           digitalWrite(PUMP_D_PIN, HIGH);
           FireStoreTest("WaterReservoirPumpOn","true","booleanValue", "WaterReservoir");
           Serial.println("Pump ON");
+          pumpActive = true;
         }
       }
 
@@ -509,7 +514,7 @@ void CheckWarnings(){
     //Serial.println("Connected to server");
     // make a HTTP request:
     // send HTTP header
-    client.println("GET v1beta1/projects/autochicken-552bf/databases/(default)/documents/AutoChicken/Warnings HTTP/1.1");
+    client.println("GET /v1beta1/projects/autochicken-552bf/databases/(default)/documents/AutoChicken/Warnings HTTP/1.1");
     client.println("Host: " + String(HOST_NAME1));
     client.println("Content-Type: application/json");
     client.println("Accept: application/json");
