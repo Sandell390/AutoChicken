@@ -249,8 +249,6 @@ void WaterLevel(){
             Serial.println("FloatSwitch ON");
 
             TogglePump(false);
-            // Check if pump has been active in 30 sec
-
           }else{
             FireStoreTest("WaterReservoirMinimumLevel","false","booleanValue", "WaterReservoir");
 
