@@ -83,7 +83,6 @@ void setup()
 
 
   CheckWarnings();
-  //FireStoreTest("WaterReservoirTempSensor","true","booleanValue");
 
   delay(40000);
 }
@@ -100,10 +99,6 @@ void TankTemperatur(){
   int tempRaw = analogRead(WATERTANKTEMP_A_PIN);
   float temp = mapfloat(tempRaw, 0.0, 4095.0, -10.0, 50.0);
 
-  //Serial.print("Tank Temperature: ");
-  //Serial.print(temp);
-  //Serial.println("C");
-
   // Checks if there is an error on the tank temparetur sensor
   if (!tankTempError)
   {
@@ -116,7 +111,6 @@ void TankTemperatur(){
     if (tankTempIndex == ARRAY_SIZE)
     {
       tankTempIndex = 0;
-      //Serial.println("Runs analyser");
 
       // Analyse the Array
       bool isArrayOkay = AnalyseArray(TankTemps);
@@ -170,10 +164,6 @@ void BowlTemperatur(){
   int tempRaw1 = analogRead(BOWLTEMP_A_PIN);
   float temp1 = mapfloat(tempRaw1, 0.0, 4095.0, -10.0, 50.0);
 
-  //Serial.print("Bowl Temperature: ");
-  //Serial.print(temp1);
-  //Serial.println("C");
-
   // Checks if there is an error on the bowl temparetur sensor
   if (!bowlTempError)
   {
@@ -186,7 +176,6 @@ void BowlTemperatur(){
     if (BowlTempIndex == ARRAY_SIZE)
     {
       BowlTempIndex = 0;
-      //Serial.println("Runs analyser");
 
       // Analyse the Array
       bool isArrayOkay = AnalyseArray(BowlTemps);
@@ -238,13 +227,7 @@ void BowlTemperatur(){
 
 void WaterLevel(){
   // Water Level
-  //int waterLevelRaw = analogRead(WATERLEVEL_A_PIN);
   int waterLevelMapped = 100 - map(readSensor(), 1800, 4095, 0, 100);
-
-  //Serial.print("WaterLevel Raw: ");
-  //Serial.println(waterLevelRaw);
-  //Serial.print("WaterLevel Mapped: ");
-  //Serial.println(waterLevelMapped);
 
   if (!pump_watersensor_error){
 
@@ -265,10 +248,7 @@ void WaterLevel(){
             FireStoreTest("WaterReservoirMinimumLevel","true","booleanValue", "WaterReservoir");
             Serial.println("FloatSwitch ON");
 
-            digitalWrite(PUMP_D_PIN, LOW);
-            FireStoreTest("WaterReservoirPumpOn","false","booleanValue", "WaterReservoir");
-            Serial.println("Pump OFF");
-            pumpActive = false;
+            TogglePump(false);
             // Check if pump has been active in 30 sec
 
           }else{
@@ -276,10 +256,7 @@ void WaterLevel(){
 
             if(average > 90){
               //Turn off pump
-              digitalWrite(PUMP_D_PIN, LOW);
-              FireStoreTest("WaterReservoirPumpOn","false","booleanValue", "WaterReservoir");
-              Serial.println("Pump OFF");
-              pumpActive = false;
+              TogglePump(false);
             }
 
           }
@@ -289,14 +266,12 @@ void WaterLevel(){
           //pump_watersensor_error = true;
           FireStoreTest("WaterPumpOrLevel","true","booleanValue", "Warnings");
           Serial.println("pump_watersensor_error ON");
+          TogglePump(false);
         }
       }else{
         if(average < 10){
           // Turn on pump
-          digitalWrite(PUMP_D_PIN, HIGH);
-          FireStoreTest("WaterReservoirPumpOn","true","booleanValue", "WaterReservoir");
-          Serial.println("Pump ON");
-          pumpActive = true;
+          TogglePump(true);
         }
       }
 
@@ -332,14 +307,9 @@ bool AnalyseArray(float array[])
       notAverageCount++;
 
       if(notAverageCount > ARRAY_SIZE/100 * 20){
-        Serial.println("Not in average range : " + String(array[i]) + " / " + String(averageValue) + " = " + String(array[i] / averageValue));
       return false;        
       }
       
-    }
-    else
-    {
-      // Serial.println("OK average range");
     }
 
     for (int j = 0; j < ARRAY_SIZE; j++)
@@ -350,7 +320,6 @@ bool AnalyseArray(float array[])
 
         if (count > ARRAY_SIZE / 100 * 95)
         {
-          //Serial.println("i value: " + String(array[i])  + " | j value: " + String(array[j]));          
           return false;
         }
       }
@@ -385,54 +354,17 @@ void ConnectToWIFI(){
   // you're connected now, so print out the data:
   Serial.print("You're connected to the network");
   printCurrentNet();
-  printWiFiData();
-}
-
-void printWiFiData() {
-  // print your WiFi shield's IP address:
-  IPAddress ip = WiFi.localIP();
-  Serial.print("IP Address: ");
-  Serial.println(ip);
-  Serial.println(ip);
-
-  // print your MAC address:
-  byte mac[6];
-  WiFi.macAddress(mac);
-  Serial.print("MAC address: ");
-  printMacAddress(mac);
-
 }
 
 void printCurrentNet() {
   // print the SSID of the network you're attached to:
   Serial.print("SSID: ");
   Serial.println(WiFi.SSID());
-  // print the MAC address of the router you're attached to:
-  // print the received signal strength:
-  long rssi = WiFi.RSSI();
-  Serial.print("signal strength (RSSI):");
-  Serial.println(rssi);
-
 }
-
-void printMacAddress(byte mac[]) {
-  for (int i = 5; i >= 0; i--) {
-    if (mac[i] < 16) {
-      Serial.print("0");
-    }
-    Serial.print(mac[i], HEX);
-    if (i > 0) {
-      Serial.print(":");
-    }
-  }
-  Serial.println();
-}
-
 
 void TogglePowerSwitch(){
   if(client.connect(HOST_NAME, 443)) {
     // if connected:
-    //Serial.println("Connected to server");
     // make a HTTP request:
     // send HTTP header
     client.println(HTTP_METHOD + " " + PATH_NAME + " HTTP/1.1");
@@ -447,16 +379,10 @@ void TogglePowerSwitch(){
       if(client.available()){
         // read an incoming byte from the server and print it to serial monitor:
         char c = client.read();
-        //Serial.print(c);
       }
     }
-
     // the server's disconnected, stop the client:
     client.stop();
-    //Serial.println();
-    //Serial.println("disconnected");
-  } else {// if not connected:
-    //Serial.println("connection failed");
   }
 }
 
@@ -469,7 +395,6 @@ void FireStoreTest(String variable, String value, String type, String document){
 
   if(client.connect(HOST_NAME1, 443)) {
     // if connected:
-    //Serial.println("Connected to server");
     // make a HTTP request:
     // send HTTP header
     client.println(HTTP_METHOD1 + " " + PATH_NAME1 + " HTTP/1.1");
@@ -486,16 +411,11 @@ void FireStoreTest(String variable, String value, String type, String document){
       if(client.available()){
         // read an incoming byte from the server and print it to serial monitor:
         char c = client.read();
-        //Serial.print(c);
       }
     }
 
     // the server's disconnected, stop the client:
-    client.stop();
-    //Serial.println();
-    //Serial.println("disconnected");
-  } else {// if not connected:
-    //Serial.println("connection failed");
+    client.stop();;
   }
 }
 
@@ -511,7 +431,6 @@ void CheckWarnings(){
 
   if(client.connect(HOST_NAME1, 443)) {
     // if connected:
-    //Serial.println("Connected to server");
     // make a HTTP request:
     // send HTTP header
     client.println("GET /v1beta1/projects/autochicken-552bf/databases/(default)/documents/AutoChicken/Warnings HTTP/1.1");
@@ -524,16 +443,11 @@ void CheckWarnings(){
       if(client.available()){
         // read an incoming byte from the server and print it to serial monitor:
         char c = client.read();
-        //Serial.print(c);
         s = client.readString();
-
-        Serial.println(s);
       }
     }
     // the server's disconnected, stop the client:
     client.stop();
-    //Serial.println();
-    //Serial.println("disconnected");
 
     const char* str = s.c_str();
 
@@ -565,8 +479,6 @@ void CheckWarnings(){
       cJSON_Delete(json);
     }
 
-  } else {// if not connected:
-    //Serial.println("connection failed");
   }
 }
 
@@ -579,4 +491,11 @@ int readSensor() {
     return val;                            // send current reading
 }
 
+void TogglePump(bool state) {
+  digitalWrite(PUMP_D_PIN, int(state));
+  FireStoreTest("WaterReservoirPumpOn",String(state),"booleanValue", "WaterReservoir");
+  Serial.println("Pump " + String(state));
+  pumpActive = state;
+  
+}
 
