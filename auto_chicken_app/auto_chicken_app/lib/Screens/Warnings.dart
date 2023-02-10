@@ -68,30 +68,42 @@ class WarningsPage extends StatelessWidget {
                                     decorationThickness: 2),
                                 'Active warnings')),
                       ),
-                      //The building of the sensors in the warnings section.
-                      _defaultWarningsSection('Waterbowl heater: \n',
-                          snapshot.data!.docs[0][dbWarningsList[0]], 0),
+                      //The building of the sensor sections on the warnings page.
+                      _defaultWarningsSection(
+                          'Waterbowl heater: \n',
+                          snapshot.data!.docs[0][dbWarningsList[0]],
+                          0,
+                          context),
                       Expanded(child: Container()),
                       _defaultWarningsSection(
                           'Waterbowl temperature \nsensor: \n',
                           snapshot.data!.docs[0][dbWarningsList[1]],
-                          1),
+                          1,
+                          context),
                       Expanded(child: Container()),
-                      _defaultWarningsSection('Waterbowl minimum \nswitch: \n',
-                          snapshot.data!.docs[0][dbWarningsList[2]], 2),
+                      _defaultWarningsSection(
+                          'Waterbowl minimum \nswitch: \n',
+                          snapshot.data!.docs[0][dbWarningsList[2]],
+                          2,
+                          context),
                       Expanded(child: Container()),
                       _defaultWarningsSection(
                           'Waterbowl pump \nor level sensor: \n',
                           snapshot.data!.docs[0][dbWarningsList[3]],
-                          3),
+                          3,
+                          context),
                       Expanded(child: Container()),
-                      _defaultWarningsSection('Waterreservoir heater: \n',
-                          snapshot.data!.docs[0][dbWarningsList[4]], 4),
+                      _defaultWarningsSection(
+                          'Waterreservoir heater: \n',
+                          snapshot.data!.docs[0][dbWarningsList[4]],
+                          4,
+                          context),
                       Expanded(child: Container()),
                       _defaultWarningsSection(
                           'Waterreservoir \ntemperature sensor: \n',
                           snapshot.data!.docs[0][dbWarningsList[5]],
-                          5),
+                          5,
+                          context),
                       Expanded(child: Container()),
                     ],
                   )),
@@ -104,8 +116,8 @@ class WarningsPage extends StatelessWidget {
 //Method to build each warning section, this tells if the sensor is funtioning or not, if not the section goes red, says "ERROR" and a button apears to reset the warning.
 //This is ment for after a replacement of the defective sensor.
 //If the warning is not active, the text is black and no button will apear.
-Row _defaultWarningsSection(
-    String text, bool activeStatus, int dbWarningsNumber) {
+Row _defaultWarningsSection(String text, bool activeStatus,
+    int dbWarningsNumber, BuildContext context) {
   return Row(
     children: [
       Text(
@@ -126,7 +138,7 @@ Row _defaultWarningsSection(
                   textStyle: TextStyle(fontSize: 16),
                   foregroundColor: Colors.white,
                   backgroundColor: Color.fromARGB(255, 142, 127, 62)),
-              onPressed: () => WarningReset(dbWarningsNumber),
+              onPressed: () => PostDialog(context, dbWarningsNumber),
               child: Text('Reset Error'))
     ],
   );
@@ -140,4 +152,47 @@ Future WarningReset(int warningToReset) async {
     '${dbWarningsList[warningToReset]}': false,
   };
   await warningsReset.update(json);
+}
+
+//Method for a post dialog that pops up when "Reset ERROR" is pushed, to ensure the that something actively have been done to fix the error and
+PostDialog(BuildContext context, int warningToReset) {
+  showDialog(
+    barrierDismissible: false,
+    context: context,
+    builder: ((context) => AlertDialog(
+          backgroundColor: Color.fromARGB(255, 25, 27, 43),
+          elevation: 20,
+          title: const Text(
+              "You are about to reset an error.\nHave the error been fixed?",
+              style: TextStyle(color: Colors.white70)),
+          actions: [
+            TextButton(
+              onPressed: () {
+                WarningReset(warningToReset);
+                const snackBar = SnackBar(
+                  content: Text('Error has been reset.'),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                "Yes",
+                style: TextStyle(
+                  color: Colors.white70,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                print("nej");
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                "No",
+                style: TextStyle(color: Colors.white70),
+              ),
+            ),
+          ],
+        )),
+  );
 }

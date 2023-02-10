@@ -100,9 +100,9 @@ void TankTemperatur(){
   int tempRaw = analogRead(WATERTANKTEMP_A_PIN);
   float temp = mapfloat(tempRaw, 0.0, 4095.0, -10.0, 50.0);
 
-  //Serial.print("Tank Temperature: ");
-  //Serial.print(temp);
-  //Serial.println("C");
+  Serial.print("Tank Temperature: ");
+  Serial.print(temp);
+  Serial.println("C");
 
   // Checks if there is an error on the tank temparetur sensor
   if (!tankTempError)
@@ -170,9 +170,9 @@ void BowlTemperatur(){
   int tempRaw1 = analogRead(BOWLTEMP_A_PIN);
   float temp1 = mapfloat(tempRaw1, 0.0, 4095.0, -10.0, 50.0);
 
-  //Serial.print("Bowl Temperature: ");
-  //Serial.print(temp1);
-  //Serial.println("C");
+  Serial.print("Bowl Temperature: ");
+  Serial.print(temp1);
+  Serial.println("C");
 
   // Checks if there is an error on the bowl temparetur sensor
   if (!bowlTempError)
