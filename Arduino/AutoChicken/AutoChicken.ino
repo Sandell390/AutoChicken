@@ -22,7 +22,7 @@ int PUMP_D_PIN = 26;
 int SWITCHFLOAT_D_PIN = 18;
 int WATERLEVEL_D_PIN = 25;
 
-//bool TankHeater = false;
+bool TankHeater = false;
 bool BowlHeater = false;
 
 float TankTemps[ARRAY_SIZE];
@@ -35,8 +35,8 @@ byte tankTempIndex = 0;
 byte BowlTempIndex = 0;
 byte waterLevelIndex = 0;
 
-bool tankTempError = true;
-bool bowlTempError = true;
+bool tankTempError = false;
+bool bowlTempError = false;
 bool pump_watersensor_error = false;
 
 bool pumpActive = false;
@@ -85,7 +85,7 @@ void setup()
   CheckWarnings();
   //FireStoreTest("WaterReservoirTempSensor","true","booleanValue");
 
-  //delay(40000);
+  delay(40000);
 }
 
 void loop()
@@ -100,9 +100,9 @@ void TankTemperatur(){
   int tempRaw = analogRead(WATERTANKTEMP_A_PIN);
   float temp = mapfloat(tempRaw, 0.0, 4095.0, -10.0, 50.0);
 
-  Serial.print("Tank Temperature: ");
-  Serial.print(temp);
-  Serial.println("C");
+  //Serial.print("Tank Temperature: ");
+  //Serial.print(temp);
+  //Serial.println("C");
 
   // Checks if there is an error on the tank temparetur sensor
   if (!tankTempError)
@@ -170,9 +170,9 @@ void BowlTemperatur(){
   int tempRaw1 = analogRead(BOWLTEMP_A_PIN);
   float temp1 = mapfloat(tempRaw1, 0.0, 4095.0, -10.0, 50.0);
 
-  Serial.print("Bowl Temperature: ");
-  Serial.print(temp1);
-  Serial.println("C");
+  //Serial.print("Bowl Temperature: ");
+  //Serial.print(temp1);
+  //Serial.println("C");
 
   // Checks if there is an error on the bowl temparetur sensor
   if (!bowlTempError)
@@ -287,7 +287,7 @@ void WaterLevel(){
         }else{
           // Send Pump/WaterLevel sensor Error
           //pump_watersensor_error = true;
-          //FireStoreTest("WaterPumpOrLevel","true","booleanValue", "Warnings");
+          FireStoreTest("WaterPumpOrLevel","true","booleanValue", "Warnings");
           Serial.println("pump_watersensor_error ON");
         }
       }else{

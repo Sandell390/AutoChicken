@@ -1,2 +1,2 @@
-#define SECRET_SSID "AVCKBH-LAP-113 2759"
-#define SECRET_OPTIONAL_PASS "#G2m0790"
+#define SECRET_SSID "GamerHot"
+#define SECRET_OPTIONAL_PASS "fladfisk"
